@@ -1,4 +1,5 @@
-#define tableSize 1997
+#include "symbolTable.h"
+
 // this function is used to find the hash value of the string
 long long hashFunc(char* inp)
 {
@@ -13,4 +14,22 @@ long long hashFunc(char* inp)
         power=(power*prime)%modulo;
     }
     return res;
+}
+//this function is to create the table and initialize all the entries to null
+Table* createTable()
+{
+    Table* symTable;
+    for(int i=0;i<tableSize;i++)
+    {
+        symTable->entries[i]=NULL;
+    }
+    return symTable;
+}
+// this function is to create an entry of the symbol table
+Entry* createEntry(char* value,char* token)
+{
+    Entry* entry=(Entry*)malloc(sizeof(Entry));
+    strcpy(entry->value,value);
+    strcpy(entry->token,token);
+    return entry;
 }
