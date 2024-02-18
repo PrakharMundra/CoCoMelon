@@ -33,3 +33,25 @@ Entry* createEntry(char* value,char* token)
     strcpy(entry->token,token);
     return entry;
 }
+void insert(Table* table,char* value,char* token)
+{
+    Entry*  item=createEntry(value,token);
+    long long hashval=hashFunc(value);
+    if(table->entries[hashval]==NULL)
+    {
+        table->entries[hashval]=item;
+    }
+    else
+    {
+        printf("Collision in table");
+        table->entries[hashval]=item;
+    }
+}
+char* search(Table* table,char* value)
+{
+    long long hashval=hashFunc(value);
+    if(table->entries[hashval]==NULL && strcmp(table->entries[hashval]->value,value)==0)
+    return table->entries[hashval]->token;
+    else
+    return NULL;
+}
