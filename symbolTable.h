@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#define tableSize 1997
+#define tableSize 100003
 typedef struct Entry{
     char* value;
     char* token;
@@ -9,3 +9,4 @@ typedef struct Entry{
 typedef struct Table{
     Entry* entries[tableSize];
 }Table;
+char* search(Table* table,char* value);
