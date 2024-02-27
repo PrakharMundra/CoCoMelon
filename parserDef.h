@@ -1,12 +1,12 @@
-#define NT_SIZE
-#define T_SIZE
-#define RULE_SIZE
-#define MAX_SIZE
+#define NT_SIZE 
+#define T_SIZE 
+#define RULE_SIZE 
+#define MAX_SIZE 
 
 typedef struct gSym{
     bool term;
-    Token t; // these two need to be changes
-    NonTerminal nt;
+    Tokeninfo tinfo; //needs to be imported
+    NonTerminal nt; //needs to be changed
 }gSym;
 
 
