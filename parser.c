@@ -70,9 +70,9 @@ void populate()
     }
     fclose(fp);
 }
-void compute_first_set(){
+void ComputeFirstAndFollowSet(){
     for(int i=0;i<NT_SIZE;i++){
-        if(containsEps[i]==1)continue;
+        if(visitedFirst[i]==1)continue;
         gSym x;
         x.isTerminal=false;
         x.nt=i;
@@ -84,6 +84,56 @@ void compute_first_set(){
          //printf("Bye");
         
     }
+    for(int i=0;i<NT_SIZE;i++){
+        if(visitedFirst[i]==1)continue;
+        gSym x;
+        x.isTerminal=false;
+        x.nt=i;
+
+       
+        //printf("Hi");
+        //int epscheck=0;
+        follow_set(x);
+         //printf("Bye");
+        
+    }
+
+
+}
+void follow_set(gSym x){
+    int check=0;
+    for(int i=0;i<MAX_SIZE;i++){
+        
+        int flag=0;
+        for(int j=1;j<Grammar[i].len;j++){
+            if(Grammar[i].rule[j].isTerminal==false&&(Grammar[i].rule[j].nt==x.nt)){
+                check=1;
+                if(j+1==Grammar[i].len){
+                    flag=1;
+                }
+                else {
+                    if(Grammar[i].rule[j+1].isTerminal==true){
+                        followSet[x.nt].set[followSet[x.nt].size]=Grammar[i].rule[j+1];
+                        followSet[x.nt].size++;
+                        break;
+                    }
+                    else{
+                        int f=0;
+                        for(int k=j+1;k<Grammar[i].len;k++){
+                            gSym follow=Grammar[i].rule[k];
+
+                        }
+                    
+                    
+
+                    
+
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 void first_set(gSym x){
@@ -182,7 +232,7 @@ void first_set(gSym x){
                 firstSet[x.nt].set[firstSet[x.nt].size]=eps;
             }
             
-            containsEps[x.nt]=1;
+            visitedFirst[x.nt]=1;
             
             
             
@@ -195,7 +245,7 @@ int main()
     populate();
     // printf("%s",Terminals[Grammar[MAX_SIZE-1].rule[Grammar[MAX_SIZE-1].len-1].t]);
     //compute_first_set();
-    compute_first_set();
+    ComputeFirstAndFollowSet();
     int k=0;
     for(int i=0;i<NT_SIZE;i++){
         printf("%i %s ",i,nonTerminals[i]);

@@ -47,4 +47,5 @@ typedef struct {
 Rule Grammar[MAX_SIZE];
 Set firstSet[NT_SIZE];
 Set followSet[NT_SIZE];
-int containsEps[NT_SIZE];
+int visitedFirst[NT_SIZE];
+int visitedFollow[NT_SIZE];
