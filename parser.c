@@ -1,6 +1,5 @@
-#include "parserDef.h"
-#include "parser.h"
 
+#include "parser.h"
 #define max_len 256
 
 void populate()
@@ -65,6 +64,88 @@ void populate()
 
     }
     fclose(fp);
+    // printf("Populated");
+}
+void first_set(gSym x){
+    //printf("Hello");
+    for(int i=0;i<MAX_SIZE;i++){
+         int flag=0;
+        if(Grammar[i].rule[0].nt==x.nt)
+        {  //printf("%s ",nonTerminals[x.nt]);
+            
+            for(int j=1;j<=Grammar[i].len;j++){
+                if(Grammar[i].rule[j].isTerminal==true){
+                    //printf("Hola");
+                    if(strcmp(Terminals[Grammar[i].rule[j].t],"TK_EPS")==0){
+                        int f=0;
+                        for(int k=0;k<firstSet[x.nt].size;k++){
+                            if(firstSet[x.nt].set[k].t==Grammar[i].rule[j].t){
+                                f=1;
+                                break;
+                            }
+                        }
+                            if(f==0){
+                                firstSet[x.nt].set[firstSet[x.nt].size]=Grammar[i].rule[j];
+                                firstSet[x.nt].size++;
+
+                            }            
+                        break;
+
+                    }
+                    else{
+                        //printf("%s ",Terminals[Grammar[i].rule[j].t]);
+                        
+                        int f=0;
+                        for(int k=0;k<firstSet[x.nt].size;k++){
+                            if(firstSet[x.nt].set[k].t==Grammar[i].rule[j].t){
+                                f=1;
+                                break;
+                            }
+                        }
+                            if(f==0){
+                                firstSet[x.nt].set[firstSet[x.nt].size]=Grammar[i].rule[j];
+                                firstSet[x.nt].size++;
+                            }
+                        break; 
+                }
+                }
+                else{
+                    first_set(Grammar[i].rule[j]);
+                    gSym first=Grammar[i].rule[j];        
+                    for(int k=0;k<firstSet[first.nt].size;k++){
+                        int f=0;
+                        if(firstSet[first.nt].set[k].t==TK_EPS){
+                                flag=1;
+                                continue;
+
+                            }
+                        for(int l=0;l<firstSet[x.nt].size;l++){
+                            
+                            if(firstSet[x.nt].set[l].t==firstSet[first.nt].set[k].t){
+                                f=1;
+                                break;
+                            }
+                        }
+                            if(f==0){
+                                firstSet[x.nt].set[firstSet[x.nt].size]=firstSet[first.nt].set[k];
+                                firstSet[x.nt].size++;
+
+                            }
+                    }
+                    if(flag==0){
+                        break;
+                    }   
+                }
+            } 
+            if(flag==1){
+                gSym eps;
+                eps.isTerminal=true;
+                eps.t=TK_EPS;
+                firstSet[x.nt].set[firstSet[x.nt].size]=eps;
+            }
+            visitedFirst[x.nt]=1;
+        }
+    }
 }
 void ComputeFirstAndFollowSet(){
     for(int i=0;i<NT_SIZE;i++){
@@ -72,18 +153,11 @@ void ComputeFirstAndFollowSet(){
         gSym x;
         x.isTerminal=false;
         x.nt=i;
-
-       
-        //printf("Hi");
-        //int epscheck=0;
-        first_set(x);
-         //printf("Bye");
-        
+        first_set(x);   
     }
     while(true){
         int change=0;
     for(int i=0;i<NT_SIZE;i++){
-        //printf("Hello");
         gSym x;
         x.isTerminal=false;
         x.nt=i;
@@ -105,49 +179,34 @@ void ComputeFirstAndFollowSet(){
                                 if(followSet[x.nt].set[l].t==Grammar[j].rule[k+1].t){
                                     c=1;
                                     break;
-
                                 }
-
                             }
                             if(c==0){
                                 change++;
                                 followSet[x.nt].set[followSet[x.nt].size]=Grammar[j].rule[k+1];
                                 followSet[x.nt].size++;
-                             
-
                             }
-
                         }
                         else{
                             for(int l=k+1;l<=Grammar[j].len;l++){
                                 //int f=0;
                                 gSym follow=Grammar[j].rule[l];
                                 if(follow.isTerminal==true){
-                                       flag=0;
-                                    
-                                    
+                                       flag=0;         
                                         //f=0;
                                         int c=0;
                                         for(int m=0;m<followSet[x.nt].size;m++){
                                         if(followSet[x.nt].set[m].t==follow.t){
                                         c=1;
                                         break;
-
-                                         }
-
+                                        }
                                         }
                                         if(c==0){
                                         change++;
                                         followSet[x.nt].set[followSet[x.nt].size]=follow;
                                         followSet[x.nt].size++;
-                                        
-                             
-
                                        }
-
-                                       break;
-
-                                    
+                                       break;      
                                 }
                                 else{
                                     int g=0;
@@ -165,13 +224,11 @@ void ComputeFirstAndFollowSet(){
                                                     c=1;
                                                     break;
                                                 }
-
                                             }
                                             if(c==0){
                                                 change++;
                                                 followSet[x.nt].set[followSet[x.nt].size]=term;
                                                 followSet[x.nt].size++;
-
                                             }
                                         }
                                     }
@@ -228,95 +285,14 @@ void ComputeFirstAndFollowSet(){
     if(change==0)break;
     }
 }
-void first_set(gSym x){
-    //printf("Hello");
-    for(int i=0;i<MAX_SIZE;i++){
-         int flag=0;
-        if(Grammar[i].rule[0].nt==x.nt)
-        {  //printf("%s ",nonTerminals[x.nt]);
-            
-            for(int j=1;j<=Grammar[i].len;j++){
-                if(Grammar[i].rule[j].isTerminal==true){
-                    //printf("Hola");
-                    if(strcmp(Terminals[Grammar[i].rule[j].t],"TK_EPS")==0){
-                        int f=0;
-                        for(int k=0;k<firstSet[x.nt].size;k++){
-                            if(firstSet[x.nt].set[k].t==Grammar[i].rule[j].t){
-                                f=1;
-                                break;
-                            }
-                        }
-                            if(f==0){
-                                firstSet[x.nt].set[firstSet[x.nt].size]=Grammar[i].rule[j];
-                                firstSet[x.nt].size++;
 
-                            }            
-                        break;
-
-                    }
-                    else{
-                        //printf("%s ",Terminals[Grammar[i].rule[j].t]);
-                        
-                        int f=0;
-                        for(int k=0;k<firstSet[x.nt].size;k++){
-                            if(firstSet[x.nt].set[k].t==Grammar[i].rule[j].t){
-                                f=1;
-                                break;
-                            }
-                        }
-                            if(f==0){
-                                firstSet[x.nt].set[firstSet[x.nt].size]=Grammar[i].rule[j];
-                                firstSet[x.nt].size++;
-
-                            }
-                        break; 
-                }
-                }
-                else{
-                    first_set(Grammar[i].rule[j]);
-                    gSym first=Grammar[i].rule[j];        
-                    for(int k=0;k<firstSet[first.nt].size;k++){
-                        int f=0;
-                        if(firstSet[first.nt].set[k].t==TK_EPS){
-                                flag=1;
-                                continue;
-
-                            }
-                        for(int l=0;l<firstSet[x.nt].size;l++){
-                            
-                            if(firstSet[x.nt].set[l].t==firstSet[first.nt].set[k].t){
-                                f=1;
-                                break;
-                            }
-                        }
-                            if(f==0){
-                                firstSet[x.nt].set[firstSet[x.nt].size]=firstSet[first.nt].set[k];
-                                firstSet[x.nt].size++;
-
-                            }
-                    }
-                    if(flag==0){
-                        break;
-                    }   
-                }
-            } 
-            if(flag==1){
-                gSym eps;
-                eps.isTerminal=true;
-                eps.t=TK_EPS;
-                firstSet[x.nt].set[firstSet[x.nt].size]=eps;
-            }
-            visitedFirst[x.nt]=1;
-        }
-    }
-}
 void createParseTable()
 {
     for(int i=0;i<MAX_SIZE;i++)
     {
         Rule r=Grammar[i];
         int flag1=0;
-        for(int j=1;j<r.len;j++){
+        for(int j=1;j<=r.len;j++){
             flag1=0;
             gSym g=r.rule[j];
             if(g.isTerminal==true && g.t!=TK_EPS)
@@ -366,20 +342,80 @@ void createParseTable()
         }
     }
 }
+void generateParseTree(char* fileName)
+{
+    FILE *fp = fopen(fileName,"r");
+    lexer_init();
+    create_stack();
+    int flag=0;
+    while (buffer[forward] != EOF)
+    {
+        if(isEmpty(s))
+        {
+            printf("Stack is Empty and there is problem in FILE");
+            break;
+        }
+        struct tokeninfo tok;
+        if(flag==0)
+        {
+        tok=getNextToken(fp);
+        }
+        gSym temp =top(s);
+        if(temp.isTerminal==true)
+        {
+            if(tok.name==temp.t)
+            {
+                pop(s);
+                flag=0;
+            }
+            else
+            {
+                printf("Error terminals dont match");
+                pop(s);
+                flag=0;
+            }
+        }
+        else
+        {
+            if(ParseTable[temp.nt][tok.name].len!=0)
+            {
+                pop(s);
+                for(int i=ParseTable[temp.nt][tok.name].len;i>=1;i--)
+                {
+                    push(s,ParseTable[temp.nt][tok.name].rule[i]);
+                }
+                flag=1;
+            }
+            else if(ParseTable[temp.nt][tok.name].synch==true)
+            {
+                pop(s);
+                flag=1;
+            }
+            else
+            {
+                printf("ERROR");
+                flag=0;
+            }
+        }
+}
+}
 int main()
 {
-    // populate();
-    // // printf("%s",Terminals[Grammar[MAX_SIZE-1].rule[Grammar[MAX_SIZE-1].len-1].t]);
+    populate();
     // //compute_first_set();
-    // ComputeFirstAndFollowSet();
-    // int k=0;
-    // for(int i=0;i<NT_SIZE;i++){
-    //     printf("%i %s ",i,nonTerminals[i]);
-    //     for(int j=0;j<firstSt[i].size;j++){
-    //         printf("%s ",Terminals[firollowt[i].set[j].t]);
-    //         //printf("Yo");
+    ComputeFirstAndFollowSet();
+    createParseTable();
+    
+    // for(int i=0;i<NT_SIZE;i++)
+    // {
+    //     for(int j=0;j<T_SIZE-1;j++)
+    //     {
+    //         if(ParseTable[i][j].len!=0)
+    //         {
+    //         printf("%s %s ",nonTerminals[i],Terminals[j]);
+    //         printf("%d \n",ParseTable[i][j].len);
+    //         }
     //     }
-    //     k++;
-    //     printf("\n");
     // }
+
 }

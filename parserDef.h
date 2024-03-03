@@ -1,3 +1,5 @@
+#ifndef parserDef
+#define parserDef
 #define NT_SIZE 53
 #define T_SIZE 59
 #define RULE_SIZE 10
@@ -51,4 +53,4 @@ Set followSet[NT_SIZE];
 int visitedFirst[NT_SIZE];
 int visitedFollow[NT_SIZE];
 Rule ParseTable[NT_SIZE][T_SIZE-1];
-
+#endif

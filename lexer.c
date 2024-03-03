@@ -1,11 +1,4 @@
-#include "lexerDef.h"
 #include "lexer.h"
-#include <ctype.h>
-#include <errno.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 removeComments(char *testcaseFile, char *cleanFile)
 {
@@ -59,34 +52,34 @@ void lexer_init()
 
 void populate_lookup_table()
 {
-    insert(symbol_table, "with", "TK_WITH");
-    insert(symbol_table, "parameters", "TK_PARAMETERS");
-    insert(symbol_table, "end", "TK_END");
-    insert(symbol_table, "while", "TK_WHILE");
-    insert(symbol_table, "union", "TK_UNION");
-    insert(symbol_table, "endunion", "TK_ENDUNION");
-    insert(symbol_table, "definetype", "TK_DEFINETYPE");
-    insert(symbol_table, "as", "TK_AS");
-    insert(symbol_table, "type", "TK_TYPE");
-    insert(symbol_table, "_main", "TK_MAIN");
-    insert(symbol_table, "global", "TK_GLOBAL");
-    insert(symbol_table, "parameter", "TK_PARAMETER");
-    insert(symbol_table, "list", "TK_LIST");
-    insert(symbol_table, "input", "TK_INPUT");
-    insert(symbol_table, "output", "TK_OUTPUT");
-    insert(symbol_table, "int", "TK_INT");
-    insert(symbol_table, "real", "TK_REAL");
-    insert(symbol_table, "endwhile", "TK_ENDWHILE");
-    insert(symbol_table, "if", "TK_IF");
-    insert(symbol_table, "then", "TK_THEN");
-    insert(symbol_table, "endif", "TK_ENDIF");
-    insert(symbol_table, "read", "TK_READ");
-    insert(symbol_table, "write", "TK_WRITE");
-    insert(symbol_table, "return", "TK_RETURN");
-    insert(symbol_table, "call", "TK_CALL");
-    insert(symbol_table, "record", "TK_RECORD");
-    insert(symbol_table, "endrecord", "TK_ENDRECORD");
-    insert(symbol_table, "else", "TK_ELSE");
+    insert(symbol_table, "with", TOKEN_MAP[TK_WITH]);
+    insert(symbol_table, "parameters", TOKEN_MAP[TK_PARAMETERS]);
+    insert(symbol_table, "end", TOKEN_MAP[TK_END]);
+    insert(symbol_table, "while", TOKEN_MAP[TK_WHILE]);
+    insert(symbol_table, "union", TOKEN_MAP[TK_UNION]);
+    insert(symbol_table, "endunion", TOKEN_MAP[TK_ENDUNION]);
+    insert(symbol_table, "definetype", TOKEN_MAP[TK_DEFINETYPE]);
+    insert(symbol_table, "as", TOKEN_MAP[TK_AS]);
+    insert(symbol_table, "type", TOKEN_MAP[TK_TYPE]);
+    insert(symbol_table, "_main", TOKEN_MAP[TK_MAIN]);
+    insert(symbol_table, "global", TOKEN_MAP[TK_GLOBAL]);
+    insert(symbol_table, "parameter", TOKEN_MAP[TK_PARAMETER]);
+    insert(symbol_table, "list", TOKEN_MAP[TK_LIST]);
+    insert(symbol_table, "input", TOKEN_MAP[TK_INPUT]);
+    insert(symbol_table, "output", TOKEN_MAP[TK_OUTPUT]);
+    insert(symbol_table, "int", TOKEN_MAP[TK_INT]);
+    insert(symbol_table, "real", TOKEN_MAP[TK_REAL]);
+    insert(symbol_table, "endwhile", TOKEN_MAP[TK_ENDWHILE]);
+    insert(symbol_table, "if", TOKEN_MAP[TK_IF]);
+    insert(symbol_table, "then", TOKEN_MAP[TK_THEN]);
+    insert(symbol_table, "endif", TOKEN_MAP[TK_ENDIF]);
+    insert(symbol_table, "read", TOKEN_MAP[TK_READ]);
+    insert(symbol_table, "write", TOKEN_MAP[TK_WRITE]);
+    insert(symbol_table, "return", TOKEN_MAP[TK_RETURN]);
+    insert(symbol_table, "call", TOKEN_MAP[TK_CALL]);
+    insert(symbol_table, "record", TOKEN_MAP[TK_RECORD]);
+    insert(symbol_table, "endrecord", TOKEN_MAP[TK_ENDRECORD]);
+    insert(symbol_table, "else", TOKEN_MAP[TK_ELSE]);
 }
 // finding the length of the lexeme
 int get_len()
@@ -275,7 +268,7 @@ tkn getNextToken(FILE *fp)
             {
                 // retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
 
                 char *dest = get_name();
                 const char *sym = " is an Unknown Symbol";
@@ -322,7 +315,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
 
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
@@ -333,14 +326,14 @@ tkn getNextToken(FILE *fp)
             }
             break;
         case 4:;
-            token.name = "TK_ASSIGNOP";
+            token.name = TK_ASSIGNOP;
             token.lexeme_value = "<---";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
             break;
         case 5:;
             retract(2);
-            token.name = "TK_LT";
+            token.name = TK_LT;
             token.lexeme_value = "<";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
@@ -372,12 +365,20 @@ tkn getNextToken(FILE *fp)
             char *search_result = search(symbol_table, token.lexeme_value);
             if (strcmp(search_result, "\0") == 0)
             { // not found in lookup table
-                token.name = "TK_FIELDID";
-                insert(symbol_table, token.lexeme_value, token.name);
+                token.name = TK_FIELDID;
+                insert(symbol_table, token.lexeme_value, TOKEN_MAP[token.name]);
             }
             else
             {
-                token.name = search_result;
+                int val;
+                int check=0;
+                while(true){
+                    if(strcmp(search_result,TOKEN_MAP[check])==0){
+                        break;
+                    }
+                    check++;
+                }
+                token.name = check;
             }
 
             lexemeBegin = (forward) % (BUFFER_SIZE);
@@ -397,7 +398,7 @@ tkn getNextToken(FILE *fp)
             {
                 // printf("\nerror in state %d",state);
                 retract(1);
-                token.name = "ERROR";
+                token.name = ERROR;
 
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
@@ -428,7 +429,7 @@ tkn getNextToken(FILE *fp)
             if (ln < 2 || ln > 20)
             {
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
                 if (ln > 20)
                     token.lexeme_value = "Variable Identifier is longer than the prescribed length of 20 characters.";
                 if (ln < 2)
@@ -442,12 +443,20 @@ tkn getNextToken(FILE *fp)
             // printf("\n %s, %s \n",token.lexeme_value, search_result);
             if (strcmp(search_result, "\0") == 0)
             { // not found in lookup table
-                token.name = "TK_ID";
-                insert(symbol_table, token.lexeme_value, token.name);
+                token.name = TK_ID;
+                insert(symbol_table, token.lexeme_value, TOKEN_MAP[token.name]);
             }
             else
             {
-                token.name = search_result;
+                int val;
+                int check=0;
+                while(true){
+                    if(strcmp(search_result,TOKEN_MAP[check])==0){
+                        break;
+                    }
+                    check++;
+                }
+                token.name = check;
             }
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
@@ -483,7 +492,7 @@ tkn getNextToken(FILE *fp)
             break;
         case 14:;
             retract(1);
-            token.name = "TK_NUM";
+            token.name = TK_NUM;
 
             token.num = atoi(get_name());
             lexemeBegin = (forward) % (BUFFER_SIZE);
@@ -514,7 +523,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
 
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
@@ -540,7 +549,7 @@ tkn getNextToken(FILE *fp)
         case 61:;
             retract(1);
             // printf("st.61\n");
-            token.name = "TK_RNUM";
+            token.name = TK_RNUM;
 
             token.rnum = atof(get_name());
             lexemeBegin = (forward) % (BUFFER_SIZE);
@@ -549,7 +558,7 @@ tkn getNextToken(FILE *fp)
 
         case 62:;
             // printf("st.62\n");
-            token.name = "TK_RNUM";
+            token.name = TK_RNUM;
 
             token.rnum = atof(get_name());
             lexemeBegin = (forward) % (BUFFER_SIZE);
@@ -572,8 +581,8 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
-                // token.name = "ERROR";
+                token.name = ERROR;
+                // token.name = ERROR;
 
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
@@ -594,7 +603,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
                 strcat(dest, sym);
@@ -615,7 +624,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
                 strcat(dest, sym);
@@ -627,7 +636,7 @@ tkn getNextToken(FILE *fp)
             break;
         case 21:;
             retract(2);
-            token.name = "TK_NUM";
+            token.name = TK_NUM;
 
             token.num = atoi(get_name());
             lexemeBegin = (forward) % (BUFFER_SIZE);
@@ -643,7 +652,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
                 strcat(dest, sym);
@@ -675,7 +684,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
                 token.lexeme_value = "Variable Identifier is longer than the prescribed length of 30 characters.";
                 lexemeBegin = (forward) % (BUFFER_SIZE);
 
@@ -688,7 +697,7 @@ tkn getNextToken(FILE *fp)
                 if (strcmp(search_result, "\0") == 0)
                 { // not found in lookup table
                     token.name = "TK_FUNID";
-                    insert(symbol_table, token.lexeme_value, token.name);
+                    insert(symbol_table, token.lexeme_value, TOKEN_MAP[token.name]);
                 }
                 else
                 {
@@ -718,7 +727,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
                 strcat(dest, sym);
@@ -744,72 +753,80 @@ tkn getNextToken(FILE *fp)
             search_result = search(symbol_table, token.lexeme_value);
             if (strcmp(search_result, "\0") == 0)
             { // not found in lookup table
-                token.name = "TK_RUID";
-                insert(symbol_table, token.lexeme_value, token.name);
+                token.name = TK_RUID;
+                insert(symbol_table, token.lexeme_value, TOKEN_MAP[token.name]);
             }
             else
             {
-                token.name = search_result;
+                int val;
+                int check=0;
+                while(true){
+                    if(strcmp(search_result,TOKEN_MAP[check])==0){
+                        break;
+                    }
+                    check++;
+                }
+                token.name = check;
             }
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 29:;
-            token.name = "TK_SQL";
+            token.name = TK_SQL;
             token.lexeme_value = "[";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 30:;
-            token.name = "TK_SQR";
+            token.name = TK_SQR;
             token.lexeme_value = "]";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 31:;
-            token.name = "TK_COMMA";
+            token.name = TK_COMMA;
             token.lexeme_value = ",";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 32:;
-            token.name = "TK_SEM";
+            token.name = TK_SEM;
             token.lexeme_value = ";";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 33:;
-            token.name = "TK_COLON";
+            token.name = TK_COLON;
             token.lexeme_value = ":";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 34:;
-            token.name = "TK_DOT";
+            token.name = TK_DOT;
             token.lexeme_value = ".";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 35:;
-            token.name = "TK_OP";
+            token.name = TK_OP;
             token.lexeme_value = "(";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 36:;
-            token.name = "TK_CL";
+            token.name = TK_CL;
             token.lexeme_value = ")";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 37:;
-            token.name = "TK_PLUS";
+            token.name = TK_PLUS;
             token.lexeme_value = "+";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 38:;
-            token.name = "TK_MINUS";
+            token.name = TK_MINUS;
             token.lexeme_value = "-";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 39:;
-            token.name = "TK_MUL";
+            token.name = TK_MUL;
             token.lexeme_value = "*";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 40:;
-            token.name = "TK_DIV";
+            token.name = TK_DIV;
             token.lexeme_value = "/";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
@@ -823,7 +840,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
                 strcat(dest, sym);
@@ -842,7 +859,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
                 strcat(dest, sym);
@@ -852,7 +869,7 @@ tkn getNextToken(FILE *fp)
             }
             break;
         case 43:;
-            token.name = "TK_AND";
+            token.name = TK_AND;
             token.lexeme_value = "&&&";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
@@ -866,7 +883,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
                 strcat(dest, sym);
@@ -885,7 +902,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
                 strcat(dest, sym);
@@ -895,12 +912,12 @@ tkn getNextToken(FILE *fp)
             }
             break;
         case 46:;
-            token.name = "TK_OR";
+            token.name = TK_OR;
             token.lexeme_value = "@@@";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 47:;
-            token.name = "TK_NOT";
+            token.name = TK_NOT;
             token.lexeme_value = "~";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
@@ -914,7 +931,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
                 strcat(dest, sym);
@@ -924,7 +941,7 @@ tkn getNextToken(FILE *fp)
             }
             break;
         case 49:;
-            token.name = "TK_EQ";
+            token.name = TK_EQ;
             token.lexeme_value = "==";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
@@ -941,24 +958,24 @@ tkn getNextToken(FILE *fp)
             break;
         case 51:;
             retract(1);
-            token.name = "TK_GT";
+            token.name = TK_GT;
             token.lexeme_value = ">";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 52:;
             // retract(1);
-            token.name = "TK_GE";
+            token.name = TK_GE;
             token.lexeme_value = ">=";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 53:;
             retract(1);
-            token.name = "TK_LT";
+            token.name = TK_LT;
             token.lexeme_value = "<";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 54:;
-            token.name = "TK_LE";
+            token.name = TK_LE;
             token.lexeme_value = "<=";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
@@ -972,7 +989,7 @@ tkn getNextToken(FILE *fp)
             {
                 retract(1);
                 // printf("\nerror in state %d", state);
-                token.name = "ERROR";
+                token.name = ERROR;
                 char *dest = get_name();
                 const char *sym = " is an Unknown Pattern";
                 strcat(dest, sym);
@@ -982,12 +999,12 @@ tkn getNextToken(FILE *fp)
             }
             break;
         case 56:;
-            token.name = "TK_LE";
+            token.name = TK_LE;
             token.lexeme_value = "!=";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
         case 57:;
-            token.name = "TK_DELIM";
+            token.name = TK_DELIM;
             line_no++;
             token.lexeme_value = get_name();
             lexemeBegin = (forward) % (BUFFER_SIZE);
@@ -996,7 +1013,7 @@ tkn getNextToken(FILE *fp)
             c = getChar(fp);
             if (c == ' ' || c == '\t')
             {
-                token.name = "TK_DELIM";
+                token.name = TK_DELIM;
                 token.lexeme_value = get_name();
                 // lexemeBegin = (forward) % (BUFFER_SIZE);
                 return token;
@@ -1009,13 +1026,13 @@ tkn getNextToken(FILE *fp)
             break;
         case 59:;
             retract(1);
-            token.name = "TK_DELIM";
+            token.name = TK_DELIM;
             token.lexeme_value = get_name();
             lexemeBegin = (forward) % (BUFFER_SIZE);
             return token;
 
         case 60:;
-            token.name = "TK_COMMENT";
+            token.name = TK_COMMENT;
             token.lexeme_value = "\%";
             lexemeBegin = (forward) % (BUFFER_SIZE);
             line_no++;

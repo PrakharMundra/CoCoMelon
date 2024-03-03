@@ -5,13 +5,17 @@ stack *create_stack()
 {
     s = (stack *)malloc(sizeof(stack));
     s->size = stacksize;
-    s->arr = (gSym *)malloc(sizeof(gSym) * s->size);
-    s->top = 0;
-    gSym topOfStack;
-    topOfStack.isTerminal = false;
-    topOfStack.nt = program;
-    s->arr[s->top] = topOfStack;
-    s->top++;
+    s->arr = (gSym *)malloc(sizeof(gSym) * s->size); 
+    s->topOfStack = 0;
+    gSym temp;
+    temp.isTerminal = true;
+    temp.t = TK_DOLLAR;
+    s->arr[s->topOfStack] = temp;
+    s->topOfStack++;
+    temp.isTerminal = false;
+    temp.nt = program;
+    s->arr[s->topOfStack] = temp;
+    // s->top++;
     return s;
 }
 
@@ -24,19 +28,19 @@ void enlargeStack(stack *s)
 }
 void push(stack *s, gSym ele)
 {
-    if (s->top == s->size)
+    if (s->topOfStack == s->size-1)
     {
         printf("stack full already\n");
         enlargeStack(s);
         printf("  stack enlarged\n");
     }
-    s->arr[s->top] = ele;
-    s->top++;
+    s->topOfStack++;
+    s->arr[s->topOfStack] = ele;
     return;
 }
 bool isEmpty(stack *s)
 {
-    if (s->top == 0)
+    if (s->topOfStack == 0)
         return true;
     return false;
 }
@@ -51,8 +55,8 @@ void pop(stack *s)
     }
     else
     {
-        ele = s->arr[s->top - 1];
-        s->top--;
+        ele = s->arr[s->topOfStack - 1];
+        s->topOfStack--;
         return;
     }
 }
@@ -63,46 +67,11 @@ gSym top(stack *s)
         printf("Stack is empty \n");
         return;
     }
-    gSym ele = s->arr[s->top - 1];
+    gSym ele = s->arr[s->topOfStack];
     if (ele.isTerminal == true)
         printf("top of stack is : %s\n", Terminals[ele.t]);
     else
         printf("top of stack is : %s\n", nonTerminals[ele.nt]);
 
     return ele;
-}
-
-int main()
-{   
-    stack *s = create_stack(); // 1 element added by default
-    gSym ele = top(s);
-    printf("---\n");
-
-    gSym ele1;
-    ele1.isTerminal = true;
-    ele1.t = 5;
-
-    printf("%d,%d\n"s->top,s->size);
-    push(s, ele1); // 2 elements now
-    ele = top(s);
-
-    printf("---\n");
-    gSym ele2;
-    ele2.isTerminal = false;
-    ele2.nt = 2;
-
-    push(s, ele2); // 3 elements now
-    ele = top(s);
-    printf("---\n");
-    pop(s); // 2 elements now
-    ele = top(s);
-    pop(s); // 1 element now
-    ele = top(s);
-    pop(s); // no element now
-    ele = top(s);
-    printf("---\n");
-    push(s, ele1); // 1 element now
-    ele = top(s);
-    printf("---\n");
-    return 0;
 }

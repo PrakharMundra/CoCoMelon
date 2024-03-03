@@ -9,11 +9,9 @@
 
 #define int long long
 // this function is used to find the hash value of the string
-
-
-int main(){
-    symbol_table = createTable();
-    populate_lookup_table();
-    char* st = search(symbol_table,"parameters");
-    printf("%s\n",st);
-}
+// int main(){
+//     symbol_table = createTable();
+//     populate_lookup_table();
+//     char* st = search(symbol_table,"parameters");
+//     printf("%s\n",st);
+// }
