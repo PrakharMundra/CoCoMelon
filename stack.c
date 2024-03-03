@@ -82,6 +82,7 @@ int main()
     ele1.isTerminal = true;
     ele1.t = 5;
 
+    printf("%d,%d\n"s->top,s->size);
     push(s, ele1); // 2 elements now
     ele = top(s);
 
