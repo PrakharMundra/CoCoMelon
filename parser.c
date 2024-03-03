@@ -1,6 +1,191 @@
-
 #include "parser.h"
 #define max_len 256
+int reverse_mapping(char* str){
+    if(strcmp(str,"TK_ASSIGNOP")==0){
+        return 0;
+    }
+    else if(strcmp(str,"TK_COMMENT")==0){
+        return 1;
+    }
+    else if(strcmp(str,"TK_FIELDID")==0){
+        return 2;
+    }
+    else if(strcmp(str,"TK_ID")==0){
+        return 3;
+    }
+    else if(strcmp(str,"TK_NUM")==0){
+        return 4;
+    }
+    else if(strcmp(str,"TK_RNUM")==0){
+        return 5;
+    }
+    else if(strcmp(str,"TK_FUNID")==0){
+        return 6;
+    }
+    else if(strcmp(str,"TK_RUID")==0){
+        return 7;
+    }
+    else if(strcmp(str,"TK_WITH")==0){
+        return 8;
+    }
+    else if(strcmp(str,"TK_PARAMETERS")==0){
+        return 9;
+    }
+    else if(strcmp(str,"TK_END")==0){
+        return 10;
+    }
+    else if(strcmp(str,"TK_WHILE")==0){
+        return 11;
+    }
+    else if(strcmp(str,"TK_UNION")==0){
+        return 12;
+    }
+    else if(strcmp(str,"TK_ENDUNION")==0){
+        return 13;
+    }
+    else if(strcmp(str,"TK_DEFINITIVE")==0){
+        return 14;
+    }
+    else if(strcmp(str,"TK_AS")==0){
+        return 15;
+    }
+    else if(strcmp(str,"TK_TYPE")==0){
+        return 16;
+    }
+    else if(strcmp(str,"TK_MAIN")==0){
+        return 17;
+    }
+    else if(strcmp(str,"TK_GLOBAL")==0){
+        return 18;
+    }
+    else if(strcmp(str,"TK_PARAMETER")==0){
+        return 19;
+    }
+    else if(strcmp(str,"TK_LIST")==0){
+        return 20;
+    }
+    else if(strcmp(str,"TK_SQL")==0){
+        return 21;
+    }
+    else if(strcmp(str,"TK_SQR")==0){
+        return 22;
+    }
+    else if(strcmp(str,"TK_INPUT")==0){
+        return 23;
+    }
+    else if(strcmp(str,"TK_OUTPUT")==0){
+        return 24;
+    }
+    else if(strcmp(str,"TK_INT")==0){
+        return 25;
+    }
+    else if(strcmp(str,"TK_REAL")==0){
+        return 26;
+    }
+    else if(strcmp(str,"TK_COMMA")==0){
+        return 27;
+    }
+    else if(strcmp(str,"TK_SEM")==0){
+        return 28;
+    }
+    else if(strcmp(str,"TK_COLON")==0){
+        return 29;
+    }
+    else if(strcmp(str,"TK_DOT")==0){
+        return 30;
+    }
+    else if(strcmp(str,"TK_ENDWHILE")==0){
+        return 31;
+    }
+    else if(strcmp(str,"TK_OP")==0){
+        return 32;
+    }
+    else if(strcmp(str,"TK_CL")==0){
+        return 33;
+    }
+    else if(strcmp(str,"TK_IF")==0){
+        return 34;
+    }
+    else if(strcmp(str,"TK_THEN")==0){
+        return 35;
+    }
+    else if(strcmp(str,"TK_ENDIF")==0){
+        return 36;
+    }
+    else if(strcmp(str,"TK_READ")==0){
+        return 37;
+    }
+    else if(strcmp(str,"TK_WRITE")==0){
+        return 38;
+    }
+    else if(strcmp(str,"TK_RETURN")==0){
+        return 39;
+    }
+    else if(strcmp(str,"TK_PLUS")==0){
+        return 40;
+    }
+    else if(strcmp(str,"TK_MINUS")==0){
+        return 41;
+    }
+    else if(strcmp(str,"TK_MUL")==0){
+        return 42;
+    }
+    else if(strcmp(str,"TK_DIV")==0){
+        return 43;
+    }
+    else if(strcmp(str,"TK_CALL")==0){
+        return 44;
+    }
+    else if(strcmp(str,"TK_RECORD")==0){
+        return 45;
+    }
+    else if(strcmp(str,"TK_ENDRECORD")==0){
+        return 46;
+    }
+    else if(strcmp(str,"TK_ELSE")==0){
+        return 47;
+    }
+    else if(strcmp(str,"TK_AND")==0){
+        return 48;
+    }
+    else if(strcmp(str,"TK_OR")==0){
+        return 49;
+    }
+    else if(strcmp(str,"TK_NOT")==0){
+        return 50;
+    }
+    else if(strcmp(str,"TK_LT")==0){
+        return 51;
+    }
+    else if(strcmp(str,"TK_LE")==0){
+        return 52;
+    }
+    else if(strcmp(str,"TK_EQ")==0){
+        return 53;
+    }
+    else if(strcmp(str,"TK_GT")==0){
+        return 54;
+    }
+    else if(strcmp(str,"TK_GE")==0){
+        return 55;
+    }
+    else if(strcmp(str,"TK_NE")==0){
+        return 56;
+    }
+    else if(strcmp(str,"TK_DOLLAR")==0){
+        return 57;
+    }
+    else if(strcmp(str,"ERROR")==0){
+        return 58;
+    }
+    else if(strcmp(str,"TK_DELIM")==0){
+        return 59;
+    }
+    else if(strcmp(str,"TK_EPS")==0){
+        return 60;
+    }  
+}
+
 
 void populate()
 {
@@ -35,7 +220,7 @@ void populate()
                 sym[x]='\0';
                 if(sym[0]=='T')
                 {
-                    for(int j=0;j<sizeof(Terminals);j++){
+                    for(int j=0;j<T_SIZE;j++){
                        if (strcmp(sym,Terminals[j])==0)
                        {
                         Grammar[ruleno].rule[rulesize].isTerminal=true;
@@ -46,7 +231,7 @@ void populate()
                 }
                 else
                 {
-                    for(int j = 0;j<sizeof(nonTerminals);j++){
+                    for(int j = 0;j<NT_SIZE;j++){
                         
                         if(strcmp(sym,nonTerminals[j])==0){
                             Grammar[ruleno].rule[rulesize].isTerminal = false;
@@ -355,15 +540,18 @@ void generateParseTree(char* fileName)
             printf("Stack is Empty and there is problem in FILE");
             break;
         }
-        struct tokeninfo tok;
+        tkn tok;
+        int en;
         if(flag==0)
         {
-        tok=getNextToken(fp);
+            tok=getNextToken(fp);
+            en = reverse_mapping(tok.name);
         }
+        
         gSym temp =top(s);
         if(temp.isTerminal==true)
         {
-            if(tok.name==temp.t)
+            if(en==temp.t)
             {
                 pop(s);
                 flag=0;
@@ -377,16 +565,16 @@ void generateParseTree(char* fileName)
         }
         else
         {
-            if(ParseTable[temp.nt][tok.name].len!=0)
+            if(ParseTable[temp.nt][en].len!=0)
             {
                 pop(s);
-                for(int i=ParseTable[temp.nt][tok.name].len;i>=1;i--)
+                for(int i=ParseTable[temp.nt][en].len;i>=1;i--)
                 {
-                    push(s,ParseTable[temp.nt][tok.name].rule[i]);
+                    push(s,ParseTable[temp.nt][en].rule[i]);
                 }
                 flag=1;
             }
-            else if(ParseTable[temp.nt][tok.name].synch==true)
+            else if(ParseTable[temp.nt][en].synch==true)
             {
                 pop(s);
                 flag=1;
@@ -405,17 +593,16 @@ int main()
     // //compute_first_set();
     ComputeFirstAndFollowSet();
     createParseTable();
-    
-    // for(int i=0;i<NT_SIZE;i++)
-    // {
-    //     for(int j=0;j<T_SIZE-1;j++)
-    //     {
-    //         if(ParseTable[i][j].len!=0)
-    //         {
-    //         printf("%s %s ",nonTerminals[i],Terminals[j]);
-    //         printf("%d \n",ParseTable[i][j].len);
-    //         }
-    //     }
-    // }
-
+    // generateParseTree("testfile.txt");
+    for(int i=0;i<NT_SIZE;i++)
+    {
+        for(int j=0;j<T_SIZE-1;j++)
+        {
+            if(ParseTable[i][j].len!=0)
+            {
+            printf("%s %s ",nonTerminals[i],Terminals[j]);
+            printf("%d \n",ParseTable[i][j].len);
+            }
+        }
+    }
 }

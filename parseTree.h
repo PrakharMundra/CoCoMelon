@@ -1,5 +1,4 @@
-#include "symbolTable.h"
-#include "lexer.h"
+
 #include "parserDef.h"
 
 typedef struct parseTree{

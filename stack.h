@@ -1,7 +1,8 @@
-#include <stdio.h>
+#ifndef STACK_H
+#define STACK_H
 
 #include "parserDef.h"
-
+#include "symbolTable.h"
 #define stacksize 1000;
 
 typedef struct stack
@@ -19,3 +20,5 @@ gSym top(stack* s);
 void pop(stack* s);
 void enlargeStack(stack* s);
 bool isEmpty(stack *s);
+
+#endif

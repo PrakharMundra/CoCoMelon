@@ -1,14 +1,9 @@
 #include<stdio.h>
 #include "parseTree.h"
 
-parseTree * createTree();
-parseTree * createNode(gSym nodeValue);
-void addChild(parseTree * parent,parseTree * childNode);
-void inorderTraversal(parseTree * startNode);
-
-
 parseTree * createTree()
 {
+
     parseTree * startNode=(parseTree *)malloc(sizeof(parseTree));
     startNode->parentNode=NULL;
     startNode->leftmost=NULL;
@@ -35,23 +30,64 @@ parseTree * createNode(gSym nodeValue)
 
 void addChild(parseTree * parent, parseTree * childNode)
 {
-    childNode->parent=parent;
-    parent->rightmost->nextNode=childNode;
-
-    if(parent->leftmost==NULL)
+    childNode->parentNode=parent;
+    childNode->nextNode=parent->leftmost;
     parent->leftmost=childNode;
 
+    if(parent->rightmost==NULL)
     parent->rightmost=childNode;
+
 }
 
-void inorderTraversal(parseTree * startNode)
+void print(parseTree * startNode)
 {
     if(startNode==NULL)
     return ;
 
-    while(startNode->nextNode->nextNode==NULL)
+    while(startNode->leftmost!=NULL)
+    {
+        if(startNode->nodeValue.isTerminal==true)
+        printf("%s \n",Terminals[startNode->nodeValue.t]);
+        else
+        printf("%s \n",nonTerminals[startNode->nodeValue.nt]);
+        startNode=startNode->leftmost;
+    }
 
+    
+    
 }
+
+void inorderTraversal(parseTree * startNode)
+{
+    
+}
+
+
+int main()
+{
+    parseTree * mainTree=createTree();
+    gSym g1;
+    g1.isTerminal=true;
+    g1.t=TK_MUL;
+
+    parseTree * node1=createNode(g1);
+    addChild(mainTree,node1);
+    g1.isTerminal=true;
+    g1.t=TK_COMMA;
+    parseTree * node2=createNode(g1);
+    addChild(node1,node2);
+    parseTree * node3=createNode(g1);
+    addChild(node2,node3);
+    parseTree * node4=createNode(g1);
+    addChild(node3,node4);
+    parseTree * node5=createNode(g1);
+    addChild(node4,node5);
+
+
+    print(mainTree);
+}
+
+  
 
 
 

@@ -2,6 +2,7 @@
 #define parser
 #include "lexer.h"
 #include "stack.h"
-#include "parserDef.h"
+#include "symbolTable.h"
+// #include "parserDef.h"
 
 #endif

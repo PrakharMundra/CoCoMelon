@@ -1,6 +1,11 @@
+#ifndef symbolTable
+#define symbolTable
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+// #include "lexer.h"
+// #include "lexerDef.h"
+
 #define tableSize 100003
 typedef struct Entry{
     char* value;
@@ -10,3 +15,16 @@ typedef struct Table{
     Entry* entries[tableSize];
 }Table;
 char* search(Table* table,char* value);
+
+extern char *Terminals[];
+extern char *nonTerminals[];
+
+
+long long hashFunc(char *inp);
+Table *createTable();
+Entry *createEntry(char * value, char* token);
+char* search(Table* table, char* value);
+void insert(Table* table, char* value, char* token);
+
+
+#endif
