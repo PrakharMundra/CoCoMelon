@@ -15,7 +15,6 @@ void populate()
     int ruleno=-1;
     while(fgets(buffer,max_len,fp))
     {
-        
         ruleno++;
         int x=0;
         int rulesize=-1;
@@ -56,14 +55,11 @@ void populate()
                             break;
                         }
                     }
-                    // printf("test3");
                 }
                 x=0;
                 free(sym);
                 sym=(char*) malloc(20*sizeof(char));
-                    // printf("test4");
             }
-            
             Grammar[ruleno].len=rulesize;
         }
 
@@ -84,61 +80,155 @@ void ComputeFirstAndFollowSet(){
          //printf("Bye");
         
     }
+    while(true){
+        int change=0;
     for(int i=0;i<NT_SIZE;i++){
-        if(visitedFirst[i]==1)continue;
+        //printf("Hello");
         gSym x;
         x.isTerminal=false;
         x.nt=i;
-
-       
-        //printf("Hi");
-        //int epscheck=0;
-        follow_set(x);
-         //printf("Bye");
-        
-    }
-
-
-}
-void follow_set(gSym x){
-    int check=0;
-    for(int i=0;i<MAX_SIZE;i++){
-        
-        int flag=0;
-        for(int j=1;j<Grammar[i].len;j++){
-            if(Grammar[i].rule[j].isTerminal==false&&(Grammar[i].rule[j].nt==x.nt)){
-                check=1;
-                if(j+1==Grammar[i].len){
-                    flag=1;
-                }
-                else {
-                    if(Grammar[i].rule[j+1].isTerminal==true){
-                        followSet[x.nt].set[followSet[x.nt].size]=Grammar[i].rule[j+1];
-                        followSet[x.nt].size++;
-                        break;
+        int check=0;
+        for(int j=0;j<MAX_SIZE;j++){
+            
+            for(int k=1;k<=Grammar[j].len;k++){
+                int flag=0;
+                if(Grammar[j].rule[k].isTerminal==false&&(Grammar[j].rule[k].nt==x.nt)){
+                    check=1;
+                    if(k==Grammar[j].len){
+                        flag=1;
                     }
                     else{
-                        int f=0;
-                        for(int k=j+1;k<Grammar[i].len;k++){
-                            gSym follow=Grammar[i].rule[k];
+                        if((Grammar[j].rule[k+1].isTerminal==true)){
+                            flag=0;
+                            int c=0;
+                            for(int l=0;l<followSet[x.nt].size;l++){
+                                if(followSet[x.nt].set[l].t==Grammar[j].rule[k+1].t){
+                                    c=1;
+                                    break;
+
+                                }
+
+                            }
+                            if(c==0){
+                                change++;
+                                followSet[x.nt].set[followSet[x.nt].size]=Grammar[j].rule[k+1];
+                                followSet[x.nt].size++;
+                             
+
+                            }
 
                         }
-                    
-                    
+                        else{
+                            for(int l=k+1;l<=Grammar[j].len;l++){
+                                //int f=0;
+                                gSym follow=Grammar[j].rule[l];
+                                if(follow.isTerminal==true){
+                                       flag=0;
+                                    
+                                    
+                                        //f=0;
+                                        int c=0;
+                                        for(int m=0;m<followSet[x.nt].size;m++){
+                                        if(followSet[x.nt].set[m].t==follow.t){
+                                        c=1;
+                                        break;
 
-                    
+                                         }
 
+                                        }
+                                        if(c==0){
+                                        change++;
+                                        followSet[x.nt].set[followSet[x.nt].size]=follow;
+                                        followSet[x.nt].size++;
+                                        
+                             
+
+                                       }
+
+                                       break;
+
+                                    
+                                }
+                                else{
+                                    int g=0;
+                                    //int f=0;
+                                    for(int m=0;m<firstSet[follow.nt].size;m++){
+                                        gSym term=firstSet[follow.nt].set[m];
+                                        if(term.t==TK_EPS){
+                                            g=1;
+                                            continue;
+                                        }
+                                        else{
+                                            int c=0;
+                                            for(int n=0;n<followSet[x.nt].size;n++){
+                                                if(term.t==followSet[x.nt].set[n].t){
+                                                    c=1;
+                                                    break;
+                                                }
+
+                                            }
+                                            if(c==0){
+                                                change++;
+                                                followSet[x.nt].set[followSet[x.nt].size]=term;
+                                                followSet[x.nt].size++;
+
+                                            }
+                                        }
+                                    }
+                                    if(g==0){
+                                        flag=0;
+                                        break;
+                                    }
+                                    else{
+                                        flag=1;
+                                    }
+                                }                        
+                            }
+                        }
                     }
-                }
+                    if(flag==1){
+                        gSym term=Grammar[j].rule[0];
+                        for(int m=0;m<followSet[term.nt].size;m++){
+                                        gSym add=followSet[term.nt].set[m];                                  
+                                            int c=0;
+                                            for(int n=0;n<followSet[x.nt].size;n++){
+                                                if(add.t==followSet[x.nt].set[n].t){
+                                                    c=1;
+                                                    break;
+                                                }
+                                            }
+                                            if(c==0){
+                                                change++;
+                                                followSet[x.nt].set[followSet[x.nt].size]=add;
+                                                followSet[x.nt].size++;
+                                            }                                    
+                                    }
+                    }
+                }                
             }
         }
+        if(check==0){
+            int c=0;
+            gSym dollar;
+            dollar.isTerminal=true;
+            dollar.t=TK_DOLLAR;
+            for(int m=0;m<followSet[x.nt].size;m++){
+                if(followSet[x.nt].set[m].t==TK_DOLLAR){
+                    c=1;
+                    break;
+                }
+            }
+            if(c==0){
+                change++;
+                followSet[x.nt].set[followSet[x.nt].size]=dollar;
+                followSet[x.nt].size++;
+            }
+        } 
     }
-
+    if(change==0)break;
+    }
 }
-
 void first_set(gSym x){
-    
-    
     //printf("Hello");
     for(int i=0;i<MAX_SIZE;i++){
          int flag=0;
@@ -160,9 +250,7 @@ void first_set(gSym x){
                                 firstSet[x.nt].set[firstSet[x.nt].size]=Grammar[i].rule[j];
                                 firstSet[x.nt].size++;
 
-                            }
-                        
-                        
+                            }            
                         break;
 
                     }
@@ -181,17 +269,12 @@ void first_set(gSym x){
                                 firstSet[x.nt].size++;
 
                             }
-                        break;
-
-                        
-
-                       
+                        break; 
                 }
                 }
                 else{
                     first_set(Grammar[i].rule[j]);
-                    gSym first=Grammar[i].rule[j];
-                    
+                    gSym first=Grammar[i].rule[j];        
                     for(int k=0;k<firstSet[first.nt].size;k++){
                         int f=0;
                         if(firstSet[first.nt].set[k].t==TK_EPS){
@@ -211,19 +294,11 @@ void first_set(gSym x){
                                 firstSet[x.nt].size++;
 
                             }
-
-                        
-
                     }
                     if(flag==0){
                         break;
-                    }
-                    
+                    }   
                 }
-                
-
-
-
             } 
             if(flag==1){
                 gSym eps;
@@ -231,40 +306,80 @@ void first_set(gSym x){
                 eps.t=TK_EPS;
                 firstSet[x.nt].set[firstSet[x.nt].size]=eps;
             }
-            
             visitedFirst[x.nt]=1;
-            
-            
-            
         }
     }
-    
+}
+void createParseTable()
+{
+    for(int i=0;i<MAX_SIZE;i++)
+    {
+        Rule r=Grammar[i];
+        int flag1=0;
+        for(int j=1;j<r.len;j++){
+            flag1=0;
+            gSym g=r.rule[j];
+            if(g.isTerminal==true && g.t!=TK_EPS)
+            {
+                ParseTable[r.rule[0].nt][g.t]=r;
+                break;
+            }
+            else if(g.isTerminal==false)
+            {
+                for(int k=0;k<firstSet[g.nt].size;k++)
+                {
+                    if(firstSet[g.nt].set[k].t==TK_EPS)
+                    {
+                        flag1=1;
+                        continue;
+                    }
+                    else
+                    {
+                        ParseTable[r.rule[0].nt][firstSet[g.nt].set[k].t]=r;
+                    }
+                }
+                if(flag1==0)
+                break;
+            }
+            else
+            {
+                flag1=1;
+                break;
+            }
+        } 
+        if(flag1==1)
+        {
+            for(int k=0;k<followSet[r.rule[0].nt].size;k++)
+            {
+                ParseTable[r.rule[0].nt][followSet[r.rule[0].nt].set[k].t]=r;
+            }
+        }
+    }
+    for(int i=0;i<NT_SIZE;i++)
+    {
+        for(int j=0;j<followSet[i].size;j++)
+        {
+            if(ParseTable[i][followSet[i].set[j].t].len==0)
+            {
+                ParseTable[i][followSet[i].set[j].t].synch=true;
+            }
+        }
+    }
 }
 int main()
 {
-    populate();
-    // printf("%s",Terminals[Grammar[MAX_SIZE-1].rule[Grammar[MAX_SIZE-1].len-1].t]);
-    //compute_first_set();
-    ComputeFirstAndFollowSet();
-    int k=0;
-    for(int i=0;i<NT_SIZE;i++){
-        printf("%i %s ",i,nonTerminals[i]);
-        for(int j=0;j<firstSet[i].size;j++){
-            printf("%s ",Terminals[firstSet[i].set[j].t]);
-            //printf("Yo");
-        }
-        k++;
-        printf("\n");
-    }
-    //printf("%d",k);
-
-     
-    
-    
-    //printf("%d",firstSet[0].set[0].t);
-    //populate();
-    //printf("%d",firstSet[0][0].isTerminal);
-    //firstSet[0].size++;
-    //printf("%d",firstSet[0].size);
+    // populate();
+    // // printf("%s",Terminals[Grammar[MAX_SIZE-1].rule[Grammar[MAX_SIZE-1].len-1].t]);
+    // //compute_first_set();
+    // ComputeFirstAndFollowSet();
+    // int k=0;
+    // for(int i=0;i<NT_SIZE;i++){
+    //     printf("%i %s ",i,nonTerminals[i]);
+    //     for(int j=0;j<firstSt[i].size;j++){
+    //         printf("%s ",Terminals[firollowt[i].set[j].t]);
+    //         //printf("Yo");
+    //     }
+    //     k++;
+    //     printf("\n");
+    // }
 }
-
