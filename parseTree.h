@@ -1,5 +1,6 @@
 
 #include "parserDef.h"
+#include "symbolTable.c"
 
 typedef struct parseTree{
     struct parseTree * parentNode;

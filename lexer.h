@@ -22,5 +22,4 @@ tkn getNextToken(FILE* fp);
 // void insert(Table* table,char* value,char* token);
 void populate_lookup_table();
 void removeComments(char *testcaseFile, char *cleanFile);
-
 #endif

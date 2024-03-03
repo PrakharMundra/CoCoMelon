@@ -43,7 +43,7 @@ int reverse_mapping(char* str){
     else if(strcmp(str,"TK_ENDUNION")==0){
         return 13;
     }
-    else if(strcmp(str,"TK_DEFINITIVE")==0){
+    else if(strcmp(str,"TK_DEFINETYPE")==0){
         return 14;
     }
     else if(strcmp(str,"TK_AS")==0){
@@ -185,8 +185,6 @@ int reverse_mapping(char* str){
         return 60;
     }  
 }
-
-
 void populate()
 {
     char buffer[max_len];
@@ -470,7 +468,6 @@ void ComputeFirstAndFollowSet(){
     if(change==0)break;
     }
 }
-
 void createParseTable()
 {
     for(int i=0;i<MAX_SIZE;i++)
@@ -480,6 +477,7 @@ void createParseTable()
         for(int j=1;j<=r.len;j++){
             flag1=0;
             gSym g=r.rule[j];
+
             if(g.isTerminal==true && g.t!=TK_EPS)
             {
                 ParseTable[r.rule[0].nt][g.t]=r;
@@ -545,12 +543,23 @@ void generateParseTree(char* fileName)
         if(flag==0)
         {
             tok=getNextToken(fp);
+            if(strcmp(tok.name,"TK_COMMENT")==0 || strcmp(tok.name,"TK_DELIM")==0)
+            continue;
+            else if(strcmp(tok.name,"ERROR")==0){
+                printf("%d, Lexical Error %s\n",tok.line, tok.lexeme_value);
+                continue;
+            }
             en = reverse_mapping(tok.name);
-        }
-        
+        } 
         gSym temp =top(s);
         if(temp.isTerminal==true)
         {
+            if(temp.t==TK_EPS)
+            {
+                pop(s);
+                flag=1;
+                continue;
+            }
             if(en==temp.t)
             {
                 pop(s);
@@ -558,10 +567,12 @@ void generateParseTree(char* fileName)
             }
             else
             {
-                printf("Error terminals dont match");
+                printf("Error terminals dont match ");
+                 printf("%d   %s %s \n",tok.line,Terminals[temp.t],tok.name);
                 pop(s);
-                flag=0;
+                flag=1;
             }
+           
         }
         else
         {
@@ -576,33 +587,47 @@ void generateParseTree(char* fileName)
             }
             else if(ParseTable[temp.nt][en].synch==true)
             {
+                ("Synch set \n");
                 pop(s);
                 flag=1;
             }
             else
             {
                 printf("ERROR");
+                printf("%d   %s %s %d\n",tok.line, nonTerminals[temp.nt],tok.name,ParseTable[temp.nt][en].len);
                 flag=0;
             }
+            
         }
 }
 }
 int main()
 {
     populate();
-    // //compute_first_set();
     ComputeFirstAndFollowSet();
     createParseTable();
-    // generateParseTree("testfile.txt");
-    for(int i=0;i<NT_SIZE;i++)
-    {
-        for(int j=0;j<T_SIZE-1;j++)
-        {
-            if(ParseTable[i][j].len!=0)
-            {
-            printf("%s %s ",nonTerminals[i],Terminals[j]);
-            printf("%d \n",ParseTable[i][j].len);
-            }
-        }
-    }
+
+    generateParseTree("testfile.txt");
+    // printf("\n----\n");
+    // for(int i =0;i<followSet[option_single_constructed].size;i++){
+    //     printf("%s\n",Terminals[followSet[option_single_constructed].set[i].t]);
+    // }
+    
+    // printf("\n---\n");
+    //  for(int i =0;i<firstSet[option_single_constructed].size;i++){
+    //     printf("%s\n",Terminals[firstSet[option_single_constructed].set[i].t]);
+    // }    
+   
+    
+    // for(int i=0;i<NT_SIZE;i++)
+    // {
+    //     for(int j=0;j<T_SIZE-1;j++)
+    //     {
+    //         if(i==typeDefinitions)
+    //         {
+    //         printf("%s %s ",nonTerminals[i],Terminals[j]);
+    //         printf("%d \n",ParseTable[i][j].len);
+    //         }
+    //     }
+    // }
 }

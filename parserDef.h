@@ -1,6 +1,6 @@
 #ifndef parserDef
 #define parserDef
-#define NT_SIZE 53
+#define NT_SIZE 54
 #define T_SIZE 61
 #define RULE_SIZE 10
 #define MAX_SIZE 95
@@ -26,7 +26,7 @@ remaining_list,stmts,typeDefinitions,actualOrRedefined,typeDefinition,fieldDefin
 fieldtype,moreFields,declarations,declaration,global_or_not,otherStmts,stmt,assignmentStmt,singleOrRecId,
 constructedVariable,oneExpansion,moreExpansions,funCallStmt,outputParameters,inputParameters,iterativeStmt,conditionalStmt,
 elsePart,ioStmt,arithmeticExpression,expPrime,term,termPrime,factor,highPrecedenceOperator,lowPrecedenceOperators,
-booleanExpression,var,logicalOp,relationalOp,returnStmt,optionalReturn,idList,more_ids,definetypestmt,A
+booleanExpression,var,logicalOp,relationalOp,returnStmt,optionalReturn,idList,more_ids,definetypestmt,A,option_single_constructed
 } NonTerminal;
 
 //  char *nonTerminals[]={"program","mainFunction","otherFunctions","function","input_par","output_par","parameter_list","dataType","primitiveDatatype","constructedDatatype","remaining_list","stmts","typeDefinitions","actualOrRedefined","typeDefinition","fieldDefinitions","fieldDefinition","fieldtype","moreFields","declarations","declaration","global_or_not","otherStmts","stmt","assignmentStmt","singleOrRecId","constructedVariable","oneExpansion","moreExpansions","funCallStmt","outputParameters","inputParameters","iterativeStmt","conditionalStmt","elsePart","ioStmt","arithmeticExpression","expPrime","term","termPrime","factor","highPrecedenceOperator","lowPrecedenceOperators","booleanExpression","var","logicalOp","relationalOp","returnStmt","optionalReturn","idList","more_ids","definetypestmt","A"};

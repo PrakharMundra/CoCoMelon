@@ -30,9 +30,9 @@ void push(stack *s, gSym ele)
 {
     if (s->topOfStack == s->size-1)
     {
-        printf("stack full already\n");
+        printf("push() : stack full already\n");
         enlargeStack(s);
-        printf("  stack enlarged\n");
+        printf(" push() : stack enlarged\n");
     }
     s->topOfStack++;
     s->arr[s->topOfStack] = ele;
@@ -50,7 +50,7 @@ void pop(stack *s)
     gSym ele;
     if (isEmpty(s))
     {
-        printf("Stack is already empty \n");
+        printf("pop() : Stack is already empty \n");
         return;
     }
     else
@@ -64,14 +64,14 @@ gSym top(stack *s)
 {
     if (isEmpty(s))
     {
-        printf("Stack is empty \n");
+        printf("top() : Stack is empty \n");
         return;
     }
     gSym ele = s->arr[s->topOfStack];
-    if (ele.isTerminal == true)
-        printf("top of stack is : %s\n", Terminals[ele.t]);
-    else
-        printf("top of stack is : %s\n", nonTerminals[ele.nt]);
+    // if (ele.isTerminal == true)
+    //     printf("top of stack is : %s\n", Terminals[ele.t]);
+    // else
+    //     printf("top of stack is : %s\n", nonTerminals[ele.nt]);
 
     return ele;
 }

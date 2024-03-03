@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-removeComments(char *testcaseFile, char *cleanFile)
+void removeComments(char *testcaseFile, char *cleanFile)
 {
     FILE *fp = fopen(testcaseFile, "r");
     FILE *fp2 = fopen(cleanFile, "w");
@@ -996,17 +996,18 @@ tkn getNextToken(FILE *fp)
             c = getChar(fp);
             if (c == ' ' || c == '\t')
             {
-                token.name = "TK_DELIM";
-                token.lexeme_value = get_name();
+               
                 // lexemeBegin = (forward) % (BUFFER_SIZE);
-                return token;
                 state = 58;
+                //return token;
+                
             }
             else
             {
                 state = 59;
             }
             break;
+        
         case 59:;
             retract(1);
             token.name = "TK_DELIM";
