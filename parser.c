@@ -1,3 +1,9 @@
+/* Group Number- 25
+ID-2021A7PS0576P Name-Nek Manchanda
+ID-2021A7PS2429P Name-Utkarsh Sharma
+ID-2021A7PS2683P Name-Yash Sejpal
+ID-2021A7PS2689P Name-Nishant Singh
+ID-2021A7PS2694P Name-Prakhar Mundra */
 #include "parser.h"
 #define max_len 256
 int reverse_mapping(char *str)
@@ -642,6 +648,17 @@ void createParseTable()
                 ParseTable[i][followSet[i].set[j].t].synch = true;
             }
         }
+        ParseTable[i][TK_SEM].synch = true;
+        ParseTable[i][TK_END].synch = true;
+
+        ParseTable[i][TK_ENDRECORD].synch = true;
+        ParseTable[i][TK_ENDUNION].synch = true;
+        ParseTable[i][TK_ENDIF].synch = true;
+        ParseTable[i][TK_ENDWHILE].synch = true;
+        ParseTable[i][TK_ELSE].synch = true;
+        ParseTable[i][TK_CL].synch = true;
+        ParseTable[i][TK_SQR].synch = true;
+        // ParseTable[i][TK_MAIN].synch= true;
     }
 }
 void generateParseTree(char *fileName)
@@ -649,8 +666,8 @@ void generateParseTree(char *fileName)
     FILE *fp = fopen(fileName, "r");
     lexer_init();
     create_stack();
-    root=createTree();
-    parseTree* mainTree=root;
+    root = createTree();
+    parseTree *mainTree = root;
     int flag = 0;
     while (buffer[forward] != EOF)
     {
@@ -691,168 +708,174 @@ void generateParseTree(char *fileName)
         gSym temp = top(s);
         if (temp.isTerminal == true)
         {
+            // printf("%d   %s %s \n", tok.line, Terminals[temp.t], tok.name);
             if (temp.t == TK_EPS)
             {
                 pop(s);
                 flag = 1;
-                
+                tkn temp_token;
+                temp_token.name="TK_EPS";
+                temp_token.line=line_no;
+                mainTree->token=temp_token;
             }
             else if (en == temp.t)
             {
                 pop(s);
                 flag = 0;
+                mainTree->token=tok;
             }
             else
             {
-                printf("Error terminals dont match ");
-                printf("%d   %s %s \n", tok.line, Terminals[temp.t], tok.name);
+                if (strcmp(tok.name, "TK_NUM") == 0)
+                    printf("Line %d Error: The token %s for lexeme %d does not match with the expected token %s\n", tok.line, tok.name, tok.num, Terminals[temp.t]);
+                else if (strcmp(tok.name, "TK_RNUM") == 0)
+                    printf("Line %d Error: The token %s for lexeme %f does not match with the expected token %s\n", tok.line, tok.name, tok.rnum, Terminals[temp.t]);
+                else
+                    printf("Line %d Error: The token %s for lexeme %s does not match with the expected token %s\n", tok.line, tok.name, tok.lexeme_value, Terminals[temp.t]);
                 pop(s);
                 flag = 1;
             }
-            while(mainTree->parentNode!=NULL)
+            while (mainTree->parentNode != NULL)
             {
-                // if(mainTree->nodeValue.isTerminal)
-                //     {
-                //         printf("%s ->",Terminals[mainTree->nodeValue.t]);
-                //     }
-                //     else
-                //     {
-                //         printf("%s ->",nonTerminals[mainTree->nodeValue.nt]);
-                //     }
-                if(mainTree->nextNode!=NULL)
+                // printf("         1\n");
+                // printf("         1\n");
+                if (mainTree->nextNode != NULL)
                 {
-                    mainTree=mainTree->nextNode;
+                    mainTree = mainTree->nextNode;
                     break;
                 }
                 else
                 {
-                    mainTree=mainTree->parentNode;
+                    mainTree = mainTree->parentNode;
                 }
             }
-            printf("\n");
         }
         else
         {
+            // printf("%d   %s %s %d\n", tok.line, nonTerminals[temp.nt], tok.name, ParseTable[temp.nt][en].len);
             if (ParseTable[temp.nt][en].len != 0)
             {
                 pop(s);
                 for (int i = ParseTable[temp.nt][en].len; i >= 1; i--)
                 {
                     push(s, ParseTable[temp.nt][en].rule[i]);
-                    addChild(mainTree,createNode(ParseTable[temp.nt][en].rule[i]));
+                    addChild(mainTree, createNode(ParseTable[temp.nt][en].rule[i]));
                 }
-                mainTree=mainTree->leftmost;
+                mainTree = mainTree->leftmost;
                 flag = 1;
             }
             else if (ParseTable[temp.nt][en].synch == true)
             {
-                printf("Synch set \n");
+
+                if (strcmp(tok.name, "TK_NUM") == 0)
+                    printf("Line %d Error: Invalid token %s encountered with value %f stack top %s\n", tok.line, tok.name, tok.num, nonTerminals[temp.nt]);
+                else if (strcmp(tok.name, "TK_RNUM") == 0)
+                    printf("Line %d Error: Invalid token %s encountered with value %f stack top %s\n", tok.line, tok.name, tok.rnum, nonTerminals[temp.nt]);
+                else
+                    printf("Line %d Error: Invalid token %s encountered with value %s stack top %s\n", tok.line, tok.name, tok.lexeme_value, nonTerminals[temp.nt]);
                 pop(s);
                 flag = 1;
-                while(mainTree->parentNode!=NULL)
+                while (mainTree->parentNode != NULL)
                 {
-                    
-                    if(mainTree->nextNode!=NULL)
+
+                    if (mainTree->nextNode != NULL)
                     {
-                        mainTree=mainTree->nextNode;
+                        mainTree = mainTree->nextNode;
 
                         break;
                     }
                     else
                     {
-                        mainTree=mainTree->parentNode;
+                        mainTree = mainTree->parentNode;
                     }
-                }   
+                }
             }
             else
             {
-                printf("ERROR");
-                printf("%d   %s %s %d\n", tok.line, nonTerminals[temp.nt], tok.name, ParseTable[temp.nt][en].len);
+
+                if (strcmp(tok.name, "TK_NUM") == 0)
+                    printf("Line %d Error: Invalid token %s encountered with value %f stack top %s\n", tok.line, tok.name, tok.num, nonTerminals[temp.nt]);
+                else if (strcmp(tok.name, "TK_RNUM") == 0)
+                    printf("Line %d Error: Invalid token %s encountered with value %f stack top %s\n", tok.line, tok.name, tok.rnum, nonTerminals[temp.nt]);
+                else
+                    printf("Line %d Error: Invalid token %s encountered with value %s stack top %s\n", tok.line, tok.name, tok.lexeme_value, nonTerminals[temp.nt]);
                 flag = 0;
             }
         }
-        // if(mainTree->nodeValue.isTerminal)
-        // {
-        //     printf("%s ->",Terminals[mainTree->nodeValue.t]);
-        // }
-        // else
-        // {
-        //     printf("%s ->",nonTerminals[mainTree->nodeValue.nt]);
-        // }
     }
-    inorderTraversal(root);
+    //inorderTraversal(root);
+    fclose(fp);
 }
-int main()
-{
-    populate();
-    ComputeFirstAndFollowSet();
-    createParseTable();
-    generateParseTree("testfile.txt");
-    // printf("\n----\n");
-    // for(int i =0;i<followSet[otherStmts].size;i++){
-    //     printf("%s\n",Terminals[followSet[otherStmts].set[i].t]);
-    // }
-    // printf("\n---\n");
-    //  for(int i =0;i<firstSet[option_single_constructed].size;i++){
-    //     printf("%s\n",Terminals[firstSet[option_single_constructed].set[i].t]);
-    // }
-    
-    // for(int i=0;i<NT_SIZE;i++)
-    // {
-    //     for(int j=0;j<T_SIZE-1;j++)
-    //     {
-    //         if(i==typeDefinitions)
-    //         {
-    //         printf("%s %s ",nonTerminals[i],Terminals[j]);
-    //         printf("%d \n",ParseTable[i][j].len);
-    //         }
-    //     }
-    // }
-    //program
-    //tk_div                 tk_mul
-    //tk_cl tk_real tk_definetype          tk_colon tk_comma
-    //output tk_cl tk_div tk_real tk_definetype program tk_colon tk_mul tk_comma
+// int main()
+// {
+//     populate();
+//     ComputeFirstAndFollowSet();
+//     createParseTable();
+//     generateParseTree("testfile.txt");
+//     printf("\n----\n");
+//     for(int i =0;i<followSet[otherStmts].size;i++){
+//         printf("%s\n",Terminals[followSet[otherStmts].set[i].t]);
+//     }
+//     printf("\n---\n");
+//      for(int i =0;i<firstSet[option_single_constructed].size;i++){
+//         printf("%s\n",Terminals[firstSet[option_single_constructed].set[i].t]);
+//     }
 
+//     // for(int i=0;i<NT_SIZE;i++)
+//     // {
+//     //     for(int j=0;j<T_SIZE-1;j++)
+//     //     {
+//     //         if(i==typeDefinitions)
+//     //         {
+//     //         printf("%s %s ",nonTerminals[i],Terminals[j]);
+//     //         printf("%d \n",ParseTable[i][j].len);
+//     //         }
+//     //     }
+//     // }
+//     //program
+//     //tk_div                 tk_mul
+//     //tk_cl tk_real tk_definetype          tk_colon tk_comma
+//     //output tk_cl tk_div tk_real tk_definetype program tk_colon tk_mul tk_comma
 
-    // parseTree * mainTree=createTree();
-    // gSym g1;
-    // g1.isTerminal=true;
-    // g1.t=TK_MUL;
-    // parseTree * node1=createNode(g1);
-    // addChild(mainTree,node1);
-    // g1.t=TK_DIV;
-    // parseTree * node2=createNode(g1);
-    // addChild(mainTree,node2);
-    // g1.isTerminal=true;
-    // g1.t=TK_COMMA;
+//     // parseTree * mainTree=createTree();
+//     // gSym g1;
+//     // g1.isTerminal=true;
+//     // g1.t=TK_MUL;
+//     // parseTree * node1=createNode(g1);
+//     // addChild(mainTree,node1);
+//     // g1.t=TK_DIV;
+//     // parseTree * node2=createNode(g1);
+//     // addChild(mainTree,node2);
+//     // g1.isTerminal=true;
+//     // g1.t=TK_COMMA;
 
-    // parseTree * node3=createNode(g1);
-    // addChild(node1,node3);
-    // g1.t=TK_COLON;
-    // parseTree * node4=createNode(g1);
-    // addChild(node1,node4);
-    // g1.t=TK_DEFINETYPE;
-    // parseTree * node5=createNode(g1);
-    // addChild(node2,node5);
-    // g1.t=TK_REAL;
-    // parseTree * node6=createNode(g1);
-    // addChild(node2,node6);
-    // g1.t=TK_CL;
-    // parseTree * node7=createNode(g1);
-    // addChild(node2,node7);
-    // //print(mainTree);
-    
-    // parseTree * temp=root;
-    // while(temp!=NULL)
-    // {
-    //     if(temp->nodeValue.isTerminal)
-    //     {
-    //         printf("%s ->",Terminals[temp->nodeValue.t]);
-    //     }
-    //     else
-    //     {
-    //         printf("%s ->",nonTerminals[temp->nodeValue.nt]);
-    //     }
-    //     temp=temp->rightmost;
-    // }
-}
+//     // parseTree * node3=createNode(g1);
+//     // addChild(node1,node3);
+//     // g1.t=TK_COLON;
+//     // parseTree * node4=createNode(g1);
+//     // addChild(node1,node4);
+//     // g1.t=TK_DEFINETYPE;
+//     // parseTree * node5=createNode(g1);
+//     // addChild(node2,node5);
+//     // g1.t=TK_REAL;
+//     // parseTree * node6=createNode(g1);
+//     // addChild(node2,node6);
+//     // g1.t=TK_CL;
+//     // parseTree * node7=createNode(g1);
+//     // addChild(node2,node7);
+//     // //print(mainTree);
+
+//     // parseTree * temp=root;
+//     // while(temp!=NULL)
+//     // {
+//     //     if(temp->nodeValue.isTerminal)
+//     //     {
+//     //         printf("%s ->",Terminals[temp->nodeValue.t]);
+//     //     }
+//     //     else
+//     //     {
+//     //         printf("%s ->",nonTerminals[temp->nodeValue.nt]);
+//     //     }
+//     //     temp=temp->rightmost;
+//     // }
+// }

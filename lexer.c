@@ -1,3 +1,9 @@
+/* Group Number- 25
+ID-2021A7PS0576P Name-Nek Manchanda
+ID-2021A7PS2429P Name-Utkarsh Sharma
+ID-2021A7PS2683P Name-Yash Sejpal
+ID-2021A7PS2689P Name-Nishant Singh
+ID-2021A7PS2694P Name-Prakhar Mundra */
 #include "lexerDef.h"
 #include "lexer.h"
 #include <ctype.h>
@@ -7,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+// removes comments from the code in 'testcasefile' and writes the cleaned code to 'cleanFile'
 void removeComments(char *testcaseFile, char *cleanFile)
 {
     FILE *fp = fopen(testcaseFile, "r");
@@ -15,7 +22,7 @@ void removeComments(char *testcaseFile, char *cleanFile)
     char ch;
     while ((ch = fgetc(fp)) != EOF)
     {
-        if (ch == '%')
+        if (ch == '%')  // ignores comments
         {
             flag = 1;
         }
@@ -29,18 +36,24 @@ void removeComments(char *testcaseFile, char *cleanFile)
             flag = 0;
         }
     }
+    fclose(fp);
+    fclose(fp2);
 }
+
+
+// shifts back the forward pointer by 'num' indices
 void retract(int num)
 {
 
     forward -= num;
-    if (forward < 0)
+    if (forward < 0)  
     {
         forward += BUFFER_SIZE;
     }
     retraction += num;
 }
-// initialize function
+
+// initializes lexer
 void lexer_init()
 {
 
@@ -53,10 +66,12 @@ void lexer_init()
     }
     state = 0;
     retraction = 0;
-    symbol_table = createTable();
-    populate_lookup_table();
+    symbol_table = createTable(); //creates a symbol table
+    populate_lookup_table(); //populates symbol table
 }
 
+
+// populates symbol table with the keywords specified
 void populate_lookup_table()
 {
     insert(symbol_table, "with", "TK_WITH");
@@ -88,7 +103,8 @@ void populate_lookup_table()
     insert(symbol_table, "endrecord", "TK_ENDRECORD");
     insert(symbol_table, "else", "TK_ELSE");
 }
-// finding the length of the lexeme
+
+// finds the length of the lexeme
 int get_len()
 {
     if (lexemeBegin <= forward)
@@ -96,25 +112,21 @@ int get_len()
         return forward - lexemeBegin;
     }
     else
-    {
-        // return BUFFER_SIZE + lexemeBegin-forward;
+    {   // if lexeme starts in the 2nd part of twin buffer
         return forward + BUFFER_SIZE - lexemeBegin;
     }
 }
-// getting the name of the lexeme
+
+// gets the name of the lexeme
 char *get_name()
 {
     int len = get_len();
-    // printf("The length taken %d\n",len);
-    char *lexeme = malloc(len + 1);
+    char *lexeme = malloc(len + 1); //allocates memory to store lexeme name
     int start = lexemeBegin;
     int i = 0;
     while (start % BUFFER_SIZE != forward)
     {
         lexeme[i] = buffer[start % BUFFER_SIZE];
-        // printf("  %c, %c \n",buffer[start%BUFFER_SIZE], lexeme[i]);
-        // printf("  %c  ",lexeme[i]);
-
         start++;
         i++;
     }
@@ -1023,4 +1035,35 @@ tkn getNextToken(FILE *fp)
             return token;
         }
     }
+}
+
+void printTokens(char *testfile)
+{
+    FILE *fp = fopen(testfile, "r");
+    while (buffer[forward] != EOF)
+    {
+        tkn tok;
+        tok = getNextToken(fp);
+        if (strcmp(tok.name, "ERROR") == 0)
+        {
+            printf("Line no. %d ", tok.line);
+            printf("Error : %s \n", tok.lexeme_value);
+        }
+        else if (strcmp(tok.name, "TK_DELIM") == 0)
+        {
+            continue;
+        }
+        else
+        {
+            printf("\033[1;34mLine no. %-25d\033[0m ", tok.line);
+            if (strcmp(tok.name, "TK_NUM") == 0)
+                printf("value = %-25d ", tok.num);
+            else if (strcmp(tok.name, "TK_RNUM") == 0)
+                printf("value = %-25.2e ", tok.rnum);
+            else
+                printf("value = %-25s ", tok.lexeme_value);
+            printf("%s : \033[1;32m%s\033[0m \n", "token", tok.name);
+        }
+    }
+    fclose(fp);
 }
