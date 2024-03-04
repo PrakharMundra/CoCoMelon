@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "parserdef.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "parsetree.h": "c"
     }
 }

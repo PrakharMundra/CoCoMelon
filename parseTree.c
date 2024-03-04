@@ -1,4 +1,3 @@
-//#include <stdio.h>
 #include "parseTree.h"
 
 parseTree * createTree()
@@ -33,91 +32,122 @@ void addChild(parseTree * parent, parseTree * childNode)
     childNode->parentNode=parent;
     childNode->nextNode=parent->leftmost;
     parent->leftmost=childNode;
-
     if(parent->rightmost==NULL)
     parent->rightmost=childNode;
 
 }
 
-void print(parseTree * startNode)
-{
-    if(startNode==NULL)
-    return ;
+// void print(parseTree * startNode)
+// {
+//     if(startNode==NULL)
+//     return ;
 
-    while(startNode->leftmost!=NULL)
-    {
-        if(startNode->nodeValue.isTerminal==true)
-        printf("%s \n",Terminals[startNode->nodeValue.t]);
-        else
-        printf("%s \n",nonTerminals[startNode->nodeValue.nt]);
-        startNode=startNode->leftmost;
-    }
+//     while(startNode->leftmost!=NULL)
+//     {
+//         if(startNode->nodeValue.isTerminal==true)
+//         printf("%s \n",Terminals[startNode->nodeValue.t]);
+//         else
+//         printf("%s \n",nonTerminals[startNode->nodeValue.nt]);
+//         startNode=startNode->leftmost;
+//     }
     
-}
+// }
 
 void inorderTraversal(parseTree * startNode)
 {
     if(startNode==NULL)
     return ;
 
+    // parseTree * leftNode=startNode->leftmost;
+    // while(leftNode!=NULL && leftNode->nextNode!=NULL)
+    // {
+    //     inorderTraversal(leftNode);
+    //     leftNode=leftNode->nextNode;
+    // }
+
+    // if(startNode->nodeValue.isTerminal)
+    // {
+    //     printf("%s->",Terminals[startNode->nodeValue.t]);
+    // }
+    // else
+    // {
+    //     printf("%s-> ",nonTerminals[startNode->nodeValue.nt]);
+    // }
+
+    // if(leftNode!=NULL)
+    // {
+    //     inorderTraversal(leftNode);
+    // }
+
+    //program
+    //tk_div                 tk_mul
+    //tk_cl tk_real tk_definetype          tk_colon tk_comma
+    //output tk_cl tk_div tk_real tk_definetype program tk_colon tk_mul tk_comma
+
     parseTree * leftNode=startNode->leftmost;
-    while(leftNode!=NULL && leftNode->nextNode!=NULL)
-    {
-        inorderTraversal(leftNode);
-        leftNode=leftNode->nextNode;
-    }
+    inorderTraversal(leftNode);
 
     if(startNode->nodeValue.isTerminal)
     {
-        printf("%s ",Terminals[startNode->nodeValue.t]);
-        printf("\n");
+        printf("%s->",Terminals[startNode->nodeValue.t]);
     }
     else
     {
-        printf("%s ",nonTerminals[startNode->nodeValue.nt]);
-        printf("\n");
+        printf("%s-> ",nonTerminals[startNode->nodeValue.nt]);
     }
 
     if(leftNode!=NULL)
     {
-        inorderTraversal(leftNode);
+        leftNode=leftNode->nextNode;
+        while(leftNode!=NULL)
+        {
+            inorderTraversal(leftNode);
+            leftNode=leftNode->nextNode;
+        }
     }
+
 }
 
 
-int main()
-{
-    parseTree * mainTree=createTree();
-    gSym g1;
-    g1.isTerminal=true;
-    g1.t=TK_MUL;
+// int main()
+// {
 
-    parseTree * node1=createNode(g1);
-    addChild(mainTree,node1);
-    g1.t=TK_DIV;
-    parseTree * node7=createNode(g1);
-    addChild(mainTree,node7);
-    g1.isTerminal=true;
-    g1.t=TK_COMMA;
-    parseTree * node2=createNode(g1);
-    addChild(node1,node2);
-    g1.t=TK_COLON;
-    parseTree * node3=createNode(g1);
-    addChild(node2,node3);
-    g1.t=TK_DEFINETYPE;
-    parseTree * node6=createNode(g1);
-    addChild(node2,node6);
-    g1.t=TK_REAL;
-    parseTree * node4=createNode(g1);
-    addChild(node3,node4);
-    g1.t=TK_CL;
-    parseTree * node5=createNode(g1);
-    addChild(node4,node5);
+//     //program
+//     //tk_mul                     tk_div
+//     //tk_comma tk_colon            tk
+//     //output tk_comma tk_mul tk_colon program tk_definetype tk_real tk_div tk_cl
+//     parseTree * mainTree=createTree();
+//     gSym g1;
+//     g1.isTerminal=true;
+//     g1.t=TK_MUL;
+
+//     parseTree * node1=createNode(g1);
+//     addChild(mainTree,node1);
+
+//     g1.t=TK_DIV;
+//     parseTree * node2=createNode(g1);
+//     addChild(mainTree,node2);
+//     g1.isTerminal=true;
+//     g1.t=TK_COMMA;
+//     parseTree * node3=createNode(g1);
+//     addChild(node1,node3);
+//     g1.t=TK_COLON;
+//     parseTree * node4=createNode(g1);
+//     addChild(node1,node4);
+//     g1.t=TK_DEFINETYPE;
+//     parseTree * node5=createNode(g1);
+//     addChild(node2,node5);
+//     g1.t=TK_REAL;
+//     parseTree * node6=createNode(g1);
+//     addChild(node2,node6);
+//     g1.t=TK_CL;
+//     parseTree * node7=createNode(g1);
+//     addChild(node2,node7);
 
 
-    //print(mainTree);
-    inorderTraversal(mainTree);
-}
+//     //print(mainTree);
+//     inorderTraversal(mainTree);
+// }
 
   
 

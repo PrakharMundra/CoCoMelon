@@ -1,6 +1,7 @@
-
+#ifndef parseTre
+#define parseTre
 #include "parserDef.h"
-#include "symbolTable.c"
+#include "symbolTable.h"
 
 typedef struct parseTree{
     struct parseTree * parentNode;
@@ -10,7 +11,10 @@ typedef struct parseTree{
     gSym nodeValue;
 }parseTree;
 
+parseTree * root;
+
 parseTree * createTree();
 parseTree * createNode(gSym nodeValue);
 void addChild(parseTree * parent,parseTree * childNode);
 void inorderTraversal(parseTree * startNode);
+#endif

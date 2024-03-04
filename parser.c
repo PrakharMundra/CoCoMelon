@@ -649,6 +649,8 @@ void generateParseTree(char *fileName)
     FILE *fp = fopen(fileName, "r");
     lexer_init();
     create_stack();
+    root=createTree();
+    parseTree* mainTree=root;
     int flag = 0;
     while (buffer[forward] != EOF)
     {
@@ -693,9 +695,9 @@ void generateParseTree(char *fileName)
             {
                 pop(s);
                 flag = 1;
-                continue;
+                
             }
-            if (en == temp.t)
+            else if (en == temp.t)
             {
                 pop(s);
                 flag = 0;
@@ -707,6 +709,27 @@ void generateParseTree(char *fileName)
                 pop(s);
                 flag = 1;
             }
+            while(mainTree->parentNode!=NULL)
+            {
+                // if(mainTree->nodeValue.isTerminal)
+                //     {
+                //         printf("%s ->",Terminals[mainTree->nodeValue.t]);
+                //     }
+                //     else
+                //     {
+                //         printf("%s ->",nonTerminals[mainTree->nodeValue.nt]);
+                //     }
+                if(mainTree->nextNode!=NULL)
+                {
+                    mainTree=mainTree->nextNode;
+                    break;
+                }
+                else
+                {
+                    mainTree=mainTree->parentNode;
+                }
+            }
+            printf("\n");
         }
         else
         {
@@ -716,14 +739,30 @@ void generateParseTree(char *fileName)
                 for (int i = ParseTable[temp.nt][en].len; i >= 1; i--)
                 {
                     push(s, ParseTable[temp.nt][en].rule[i]);
+                    addChild(mainTree,createNode(ParseTable[temp.nt][en].rule[i]));
                 }
+                mainTree=mainTree->leftmost;
                 flag = 1;
             }
             else if (ParseTable[temp.nt][en].synch == true)
             {
-                ("Synch set \n");
+                printf("Synch set \n");
                 pop(s);
                 flag = 1;
+                while(mainTree->parentNode!=NULL)
+                {
+                    
+                    if(mainTree->nextNode!=NULL)
+                    {
+                        mainTree=mainTree->nextNode;
+
+                        break;
+                    }
+                    else
+                    {
+                        mainTree=mainTree->parentNode;
+                    }
+                }   
             }
             else
             {
@@ -732,7 +771,16 @@ void generateParseTree(char *fileName)
                 flag = 0;
             }
         }
+        // if(mainTree->nodeValue.isTerminal)
+        // {
+        //     printf("%s ->",Terminals[mainTree->nodeValue.t]);
+        // }
+        // else
+        // {
+        //     printf("%s ->",nonTerminals[mainTree->nodeValue.nt]);
+        // }
     }
+    inorderTraversal(root);
 }
 int main()
 {
@@ -741,15 +789,14 @@ int main()
     createParseTable();
     generateParseTree("testfile.txt");
     // printf("\n----\n");
-    // for(int i =0;i<followSet[option_single_constructed].size;i++){
-    //     printf("%s\n",Terminals[followSet[option_single_constructed].set[i].t]);
+    // for(int i =0;i<followSet[otherStmts].size;i++){
+    //     printf("%s\n",Terminals[followSet[otherStmts].set[i].t]);
     // }
-
     // printf("\n---\n");
     //  for(int i =0;i<firstSet[option_single_constructed].size;i++){
     //     printf("%s\n",Terminals[firstSet[option_single_constructed].set[i].t]);
     // }
-
+    
     // for(int i=0;i<NT_SIZE;i++)
     // {
     //     for(int j=0;j<T_SIZE-1;j++)
@@ -760,5 +807,52 @@ int main()
     //         printf("%d \n",ParseTable[i][j].len);
     //         }
     //     }
+    // }
+    //program
+    //tk_div                 tk_mul
+    //tk_cl tk_real tk_definetype          tk_colon tk_comma
+    //output tk_cl tk_div tk_real tk_definetype program tk_colon tk_mul tk_comma
+
+
+    // parseTree * mainTree=createTree();
+    // gSym g1;
+    // g1.isTerminal=true;
+    // g1.t=TK_MUL;
+    // parseTree * node1=createNode(g1);
+    // addChild(mainTree,node1);
+    // g1.t=TK_DIV;
+    // parseTree * node2=createNode(g1);
+    // addChild(mainTree,node2);
+    // g1.isTerminal=true;
+    // g1.t=TK_COMMA;
+
+    // parseTree * node3=createNode(g1);
+    // addChild(node1,node3);
+    // g1.t=TK_COLON;
+    // parseTree * node4=createNode(g1);
+    // addChild(node1,node4);
+    // g1.t=TK_DEFINETYPE;
+    // parseTree * node5=createNode(g1);
+    // addChild(node2,node5);
+    // g1.t=TK_REAL;
+    // parseTree * node6=createNode(g1);
+    // addChild(node2,node6);
+    // g1.t=TK_CL;
+    // parseTree * node7=createNode(g1);
+    // addChild(node2,node7);
+    // //print(mainTree);
+    
+    // parseTree * temp=root;
+    // while(temp!=NULL)
+    // {
+    //     if(temp->nodeValue.isTerminal)
+    //     {
+    //         printf("%s ->",Terminals[temp->nodeValue.t]);
+    //     }
+    //     else
+    //     {
+    //         printf("%s ->",nonTerminals[temp->nodeValue.nt]);
+    //     }
+    //     temp=temp->rightmost;
     // }
 }
